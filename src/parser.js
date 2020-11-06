@@ -1,9 +1,3 @@
-
-/***************************
-EXPECTED OUTPUT TEMPLATES
-****************************/
-
-
 const expectedColDescription = {
 	name: "colname", //column header name
 	dataType: "", //text, datetime, integer, float
@@ -16,18 +10,6 @@ const expectedColDescription = {
 
 
 
-const expectedSheetDescription = {
-	hasData: true, //or false
-	columns: [expectedColDescription, expectedColDescription], //array of columns descriptions -> expectedColDescription
-	dataBeginAtRowIndex: -1, //this should be detected
-	dataBeginAtColIndex: -1, //this should be detected
-	dataEndsAtRowIndex: -1, //this should be detected
-	dataEndsAtColIndex: -1, //this should be detected
-	skiprows: [], //rows with data out of context inside start/end area
-	skipcolumns: [],
-}
-
-
 /***************************
 FUNCTIONS
 ****************************/
@@ -37,20 +19,6 @@ const skipColumnFactor = 0.04;
 
 const getDefinedCount = row => row.filter(value => value != undefined).length;
 const isSkipRow = (row, maxRowLength) => (getDefinedCount(row) == 0 || getDefinedCount(row) < skipRowFactor * maxRowLength);
-
-function detectAttributes(sheet) {
-	let isStartDetected = false;
-	for (var rowIndex = 0; rowIndex < sheet.data.length; rowIndex++) {
-		const row = sheet.data[rowIndex];
-		if (!isStartDetected) {
-			isStartDetected = true;
-			expectedSheetDescription.dataBeginAtRowIndex = rowIndex;
-			expectedSheetDescription.dataBeginAtColIndex = 0;
-		}
-	}
-
-	return expectedSheetDescription;
-}
 
 function detectDataSpan({ maxColumnIndex, maxRowIndex, skiprows, skipcolumns }) {
 	let beginRow = 0;
@@ -62,25 +30,25 @@ function detectDataSpan({ maxColumnIndex, maxRowIndex, skiprows, skipcolumns }) 
 	while (skiprows.includes(endRow)) endRow--;
 	while (skipcolumns.includes(endColumn)) endColumn--;
 	return {
-		beginRow: beginRow,
-		beginColumn: beginColumn,
-		endRow: endRow,
-		endColumn: endColumn,
-	}
+		dataBeginAtRowIndex: beginRow, //this should be detected
+		dataBeginAtColIndex: beginColumn, //this should be detected
+		dataEndsAtRowIndex: endRow, //this should be detected
+		dataEndsAtColIndex: endColumn,
+	};
 }
 
 function detectSkipRows(sheet) {
 	const skiprows = [];
-	let maxRowLength = 0;
+	let maxColumnLength = 0;
 	for (var rowIndex = 0; rowIndex < sheet.data.length; rowIndex++) {
 		const row = sheet.data[rowIndex];
-		if (row.length > maxRowLength) maxRowLength = row.length;
-		if (isSkipRow(row, maxRowLength)) skiprows.push(rowIndex);
+		if (row.length > maxColumnLength) maxColumnLength = row.length;
+		if (isSkipRow(row, maxColumnLength)) skiprows.push(rowIndex);
 	}
 	return {
 		skiprows: skiprows,
-		maxRowLength: maxRowLength,
-	};
+		maxColumnLength: maxColumnLength,
+	}
 }
 
 function detectSkipColumns(sheet, maxRowLength) {
@@ -95,6 +63,20 @@ function detectSkipColumns(sheet, maxRowLength) {
 	return skipcolumns;
 }
 
+function collectColumnDescriptions(sheet, dataSpan) {
+	const columnDescriptions = [];
+
+	for (var columnIndex = dataSpan.dataBeginAtColIndex; columnIndex <= dataSpan.dataEndsAtColIndex; columnIndex++) {
+		const title = sheet.data[dataSpan.dataBeginAtRowIndex][columnIndex];
+		columnDescriptions.push(title);
+
+		// for (var rowIndex = dataSpan.dataBeginAtRowIndex; rowIndex < dataEndsAtRowIndex; rowIndex++) {
+
+		// }
+	}
+	return columnDescriptions;
+}
+
 
 
 
@@ -104,20 +86,26 @@ EXPORT
 ****************************/
 
 module.exports.parseSheet = function (sheet) {
-	const attributes = detectAttributes(sheet);
+	const attributes = {
+		hasData: sheet.data.length > 0,
+		columns: [], //array of columns descriptions -> expectedColDescription
+		dataSpan: {},
+		skiprows: [], //rows with data out of context inside start/end area
+		skipcolumns: [],
+	};
+	if (!attributes.hasData) return { attributes, sheet };
+
 	const rowInfo = detectSkipRows(sheet);
-	const skipcolumns = detectSkipColumns(sheet, rowInfo.maxRowLength);
+	const skipcolumns = detectSkipColumns(sheet, rowInfo.maxColumnLength);
 	const dataSpan = detectDataSpan({
-		maxColumnIndex: rowInfo.maxRowLength,
+		maxColumnIndex: rowInfo.maxColumnLength,
 		maxRowIndex: sheet.data.length,
 		skiprows: rowInfo.skiprows,
 		skipcolumns: skipcolumns
 	});
+	attributes.dataSpan = dataSpan;
 	attributes.skiprows = rowInfo.skiprows;
 	attributes.skipcolumns = skipcolumns;
-	attributes.dataBeginAtRowIndex = dataSpan.beginRow;
-	attributes.dataBeginAtColIndex = dataSpan.beginColumn;
-	attributes.dataEndsAtRowIndex = dataSpan.endRow;
-	attributes.dataEndsAtColIndex = dataSpan.endColumn;
+	attributes.columns = collectColumnDescriptions(sheet, dataSpan);
 	return { attributes, sheet };
 }

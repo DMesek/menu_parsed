@@ -15,10 +15,17 @@ function testDataSpan({ sheet, expectedRowStart, expectedRowEnd, expectedColumnS
     const result = parser.parseSheet(sheet);
     test(`data span should be rows: ${expectedRowStart} - ${expectedRowEnd}, 
             columns: ${expectedColumnStart} - ${expectedColumnEnd}`, () => {
-        expect(result.attributes.dataBeginAtRowIndex).toBe(expectedRowStart);
-        expect(result.attributes.dataBeginAtColIndex).toBe(expectedColumnStart);
-        expect(result.attributes.dataEndsAtRowIndex).toBe(expectedRowEnd);
-        expect(result.attributes.dataEndsAtColIndex).toBe(expectedColumnEnd);
+        expect(result.attributes.dataSpan.dataBeginAtRowIndex).toBe(expectedRowStart);
+        expect(result.attributes.dataSpan.dataBeginAtColIndex).toBe(expectedColumnStart);
+        expect(result.attributes.dataSpan.dataEndsAtRowIndex).toBe(expectedRowEnd);
+        expect(result.attributes.dataSpan.dataEndsAtColIndex).toBe(expectedColumnEnd);
+    });
+}
+
+function testHasData(sheet, expected) {
+    const result = parser.parseSheet(sheet);
+    test(`hasData should be ${expected}`, () => {
+        expect(result.attributes.hasData).toBe(expected);
     });
 }
 
@@ -64,4 +71,17 @@ describe('parser test for data/primjer4.xlsx sheet1', () => {
         sheet: sheet, expectedRowStart: 0, expectedRowEnd: 30,
         expectedColumnStart: 0, expectedColumnEnd: 8,
     })
+    testHasData(sheet, true);
+});
+
+describe('parser test for data/primjer3.xlsx sheet2 (empty sheet)', () => {
+    const sheet = convertToUnifiedFormat('data/primjer3.xlsx')[1];
+
+    testSkipRowsColumns(sheet, '', 'skiprows');
+    testSkipRowsColumns(sheet, '', 'skipcolumns');
+    // testDataSpan({
+    //     sheet: sheet, expectedRowStart: 0, expectedRowEnd: 30,
+    //     expectedColumnStart: 0, expectedColumnEnd: 8,
+    // })
+    testHasData(sheet, false);
 });
