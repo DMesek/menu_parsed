@@ -68,7 +68,15 @@ function collectColumnDescriptions(sheet, dataSpan) {
 
 	for (var columnIndex = dataSpan.dataBeginAtColIndex; columnIndex <= dataSpan.dataEndsAtColIndex; columnIndex++) {
 		const title = sheet.data[dataSpan.dataBeginAtRowIndex][columnIndex];
-		columnDescriptions.push(title);
+		columnDescriptions.push({
+			name: title, //column header name
+			dataType: "", //text, datetime, integer, float
+			headerType: "", //text, datetime
+			dataContext: "identifier", //or values
+			year: null, //if type=datetime
+			month: null, //if type=datetime
+			dateTimeFormat: null, //DD MM YYYY or DD/MM/YYYY (only if year and month are both null - general datetime series)
+		});
 
 		// for (var rowIndex = dataSpan.dataBeginAtRowIndex; rowIndex < dataEndsAtRowIndex; rowIndex++) {
 

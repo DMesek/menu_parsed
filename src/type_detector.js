@@ -4,7 +4,7 @@ const isInt = input => typeof input == 'number' && !input.toString().includes('.
 const isFloat = input => typeof input == 'number' && input.toString().includes('.');
 const isDate = date => date.match(dateRegex) != null;
 
-function detect(data) {
+function detectData(data) {
     let type = 'text';
     if (isInt(data)) type = 'integer';
     else if (isFloat(data)) type = 'float';
@@ -12,7 +12,7 @@ function detect(data) {
     return type;
 }
 
-module.exports.detect = detect;
+module.exports.detectData = detectData;
 
 
 

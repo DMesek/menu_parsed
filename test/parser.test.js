@@ -29,6 +29,13 @@ function testHasData(sheet, expected) {
     });
 }
 
+function testHeaderTitle(sheet, expected) {
+    const result = parser.parseSheet(sheet);
+    test(`should return header titles: ${expected}`, () => {
+        expect(result.attributes.columns.map(c => c.name).toString()).toBe(expected);
+    });
+}
+
 describe('parser test for data/primjer.xlsx sheet1', () => {
     const sheet = convertToUnifiedFormat('data/primjer.xlsx')[0];
 
@@ -38,6 +45,8 @@ describe('parser test for data/primjer.xlsx sheet1', () => {
         sheet: sheet, expectedRowStart: 3, expectedRowEnd: 33,
         expectedColumnStart: 0, expectedColumnEnd: 14,
     })
+    testHeaderTitle(sheet, 'Proizvod,Regija,Kanal,2020-1,2020-2,2020-3,' +
+        '2020-4,2020-5,2020-6,2020-7,2020-8,2020-9,2020-10,2020-11,2020-12');
 });
 
 describe('parser test for data/primjer2.xlsx sheet2', () => {
@@ -49,6 +58,8 @@ describe('parser test for data/primjer2.xlsx sheet2', () => {
         sheet: sheet, expectedRowStart: 0, expectedRowEnd: 34,
         expectedColumnStart: 0, expectedColumnEnd: 14,
     })
+    testHeaderTitle(sheet, 'Proizvod,Regija,Kanal,2020-1,2020-2,2020-3,' +
+        '2020-4,2020-5,6,2020-7,2020-8,2020-9,2020-10,2020-11,2020-12');
 });
 
 describe('parser test for data/primjer3.xlsx sheet1', () => {
@@ -60,6 +71,9 @@ describe('parser test for data/primjer3.xlsx sheet1', () => {
         sheet: sheet, expectedRowStart: 0, expectedRowEnd: 748,
         expectedColumnStart: 0, expectedColumnEnd: 17,
     })
+    testHeaderTitle(sheet, 'Broj naloga,Naziv,Adresa, ulica i broj,Mjesto,Broj računa,Poziv na broj,' +
+        'Isplata (Duguje),Uplata (Potražuje),Valuta,Hitno,IBAN ili broj računa,Poziv na broj,Naziv,Adresa, ulica i broj,' +
+        'Mjesto,Šifra namjene,Opis plaćanja,Datum izvršenja');
 });
 
 describe('parser test for data/primjer4.xlsx sheet1', () => {
@@ -79,9 +93,5 @@ describe('parser test for data/primjer3.xlsx sheet2 (empty sheet)', () => {
 
     testSkipRowsColumns(sheet, '', 'skiprows');
     testSkipRowsColumns(sheet, '', 'skipcolumns');
-    // testDataSpan({
-    //     sheet: sheet, expectedRowStart: 0, expectedRowEnd: 30,
-    //     expectedColumnStart: 0, expectedColumnEnd: 8,
-    // })
     testHasData(sheet, false);
 });
