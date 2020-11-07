@@ -57,12 +57,12 @@ function collectColumnDescriptions(sheet, dataSpan) {
 	const columnDescriptions = [];
 
 	for (var columnIndex = dataSpan.dataBeginAtColIndex; columnIndex <= dataSpan.dataEndsAtColIndex; columnIndex++) {
-		let dataType = '';
+		let dataType;
 		for (var rowIndex = dataSpan.dataBeginAtRowIndex + 1; rowIndex <= dataSpan.dataEndsAtRowIndex; rowIndex++) {
 			const data = sheet.data[rowIndex][columnIndex];
 			if (data == undefined) continue;
 			dataType = typeDetector.detectData(data);
-			if (dataType != 'datetime') break;
+			break;
 
 
 		}
