@@ -42,3 +42,29 @@ describe('typeDetector.detectHeader', () => {
     });
 });
 
+describe('typeDetector.getDateDetails', () => {
+    test("should return year: 1997, month: 4, dateFormat: DD.MM.YYYY when date 21.4.1997 is passed", () => {
+        expect(typeDetector.getDateDetails('21.4.1997')).toStrictEqual({ year: '1997', month: '4', dateTimeFormat: 'DD.MM.YYYY', });
+    });
+
+    test("should return year: 1997, month: 04, dateFormat: MM/DD/YYYY when date 04/21/1997 is passed", () => {
+        expect(typeDetector.getDateDetails('04/21/1997')).toStrictEqual({ year: '1997', month: '04', dateTimeFormat: 'MM/DD/YYYY', });
+    });
+
+    test("should return year: 1997, month: 4, dateFormat: YYYY/MM/DD when date 1997/4/21 is passed", () => {
+        expect(typeDetector.getDateDetails('1997/4/21')).toStrictEqual({ year: '1997', month: '4', dateTimeFormat: 'YYYY/MM/DD', });
+    });
+
+    test("should return year: 1997, month: 4, dateFormat: YYYY/MM/DD when date 1997/4/21 is passed", () => {
+        expect(typeDetector.getDateDetails('1997/4/21')).toStrictEqual({ year: '1997', month: '4', dateTimeFormat: 'YYYY/MM/DD', });
+    });
+
+    test("should return year: 1997, month: 4, dateFormat: YYYY-MM when date 1997-4 is passed", () => {
+        expect(typeDetector.getDateDetails('1997-4')).toStrictEqual({ year: '1997', month: '4', dateTimeFormat: 'YYYY-MM', });
+    });
+
+    test("should return year: 1997, month: 04, dateFormat: MM/YYYY when date 04/1997 is passed", () => {
+        expect(typeDetector.getDateDetails('04/1997')).toStrictEqual({ year: '1997', month: '04', dateTimeFormat: 'MM/YYYY', });
+    });
+});
+

@@ -31,17 +31,18 @@ function detectHeader(data) {
 
 function getDateDetails(data) {
     let match = null;
-    for (format of dateFormats.supportedDataDateFormats) {
+    const supportedFormats = dateFormats.supportedDataDateFormats.concat(dateFormats.supportedHeaderDateFormats);
+    for (format of supportedFormats) {
         match = data.toString().match(format.regex);
         if (match == null) continue;
 
-        const sth = {
+        const month = match[format.monthIndex];
+        if (month > 12) continue;
+        return {
             year: match[format.yearIndex],
-            month: match[format.monthIndex],
+            month: month,
             dateTimeFormat: format.pattern.join(match[format.splitIndex]),
         };
-        console.log(sth);
-        return sth;
     }
     return match;
 }
