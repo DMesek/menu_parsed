@@ -75,6 +75,13 @@ function testCommonYear(sheet, expected) {
     });
 }
 
+function testCommonDatePattern(sheet, expected) {
+    const result = parser.parseSheet(sheet);
+    test(`should return common date pattern fields: ${expected}`, () => {
+        expect(result.attributes.columns.map(c => c.dateTimeFormat).toString()).toBe(expected);
+    });
+}
+
 describe('parser test for data/primjer.xlsx sheet1', () => {
     const sheet = convertToUnifiedFormat('data/primjer.xlsx')[0];
 
@@ -91,6 +98,7 @@ describe('parser test for data/primjer.xlsx sheet1', () => {
     testDataContext(sheet, Array(3).fill('identifier').concat(Array(12).fill('values')).toString());
     testCommonMonth(sheet, ',,,1,2,3,4,5,6,7,8,9,10,11,12');
     testCommonYear(sheet, ',,,' + (Array(12).fill('2020')).toString());
+    testCommonDatePattern(sheet, ',,,' + Array(12).fill('YYYY-MM').toString());
 });
 
 describe('parser test for data/primjer2.xlsx sheet2', () => {
@@ -128,6 +136,7 @@ describe('parser test for data/primjer3.xlsx sheet1', () => {
     testDataContext(sheet, Array(6).fill('identifier').concat(Array(2).fill('values').concat(Array(9).fill('identifier'))).toString() + ',values');
     testCommonMonth(sheet, ',,,,,,,,,,,,,,,,,'); //no common year/month detected
     testCommonYear(sheet, ',,,,,,,,,,,,,,,,,'); //no common year/month detected
+    testCommonDatePattern(sheet, ',,,,,,,,,,,,,,,,,'); //no common year/month detected
 });
 
 describe('parser test for data/primjer4.xlsx sheet1', () => {
