@@ -84,6 +84,14 @@ function collectColumnDescriptions(sheet, dataSpan) {
 			if (data == undefined) continue;
 			dataType = typeDetector.detectData(data);
 			if (dataType != 'datetime') break;
+
+			const dateDetails = typeDetector.getDateDetails(data);
+			if (rowIndex == dataSpan.dataBeginAtRowIndex + 1) {
+				year = dateDetails.year; month = dateDetails.month; dateTimeFormat = dateDetails.dateTimeFormat;
+			} else if (year != dateDetails.year) year = null;
+			else if (month != dateDetails.month) month = null;
+			else if (dateTimeFormat != dateDetails.dateTimeFormat) dateTimeFormat = null;
+
 		}
 		const title = sheet.data[dataSpan.dataBeginAtRowIndex][columnIndex];
 		const dataContext = dataType == 'text' ? 'identifier' : 'values';

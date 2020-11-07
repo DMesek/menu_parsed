@@ -135,8 +135,8 @@ describe('parser test for data/primjer3.xlsx sheet1', () => {
     testDataType(sheet, 'text,text,text,text,text,text,float,integer,text,text,text,text,text,text,text,text,text,datetime')
     testDataContext(sheet, Array(6).fill('identifier').concat(Array(2).fill('values').concat(Array(9).fill('identifier'))).toString() + ',values');
     testCommonMonth(sheet, ',,,,,,,,,,,,,,,,,'); //no common year/month detected
-    testCommonYear(sheet, ',,,,,,,,,,,,,,,,,'); //no common year/month detected
-    testCommonDatePattern(sheet, ',,,,,,,,,,,,,,,,,'); //no common year/month detected
+    testCommonYear(sheet, ',,,,,,,,,,,,,,,,,2019');
+    testCommonDatePattern(sheet, ',,,,,,,,,,,,,,,,,DD.MM.YYYY');
 });
 
 describe('parser test for data/primjer4.xlsx sheet1', () => {
@@ -152,6 +152,9 @@ describe('parser test for data/primjer4.xlsx sheet1', () => {
     testHeaderType(sheet, Array(9).fill('text').toString());
     testHasData(sheet, true);
     testDataType(sheet, 'text,datetime,integer,text,integer,text,integer,integer,integer');
+    testCommonMonth(sheet, ',01,,,,,,,');
+    testCommonYear(sheet, ',2020,,,,,,,');
+    testCommonDatePattern(sheet, ',YYYY.MM.DD,,,,,,,');
 });
 
 describe('parser test for data/primjer3.xlsx sheet2 (empty sheet)', () => {
