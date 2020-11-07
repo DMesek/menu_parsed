@@ -14,13 +14,23 @@ function detectData(data) {
     if (isInt(data)) type = 'integer';
     else if (isFloat(data)) type = 'float';
     else if (isDataDate(data)) type = 'datetime';
-    return type;
+    return {
+        type: type,
+        year: '',
+        month: '',
+        dateFormat: '',
+    };
 }
 
 function detectHeader(data) {
     let type = 'text';
     if (isHeaderDate(data)) type = 'datetime';
-    return type;
+    return {
+        type: type,
+        year: '',
+        month: '',
+        dateFormat: '',
+    };
 }
 
 module.exports.detectData = detectData;

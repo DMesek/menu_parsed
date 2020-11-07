@@ -62,7 +62,9 @@ function collectColumnDescriptions(sheet, dataSpan) {
 			const data = sheet.data[rowIndex][columnIndex];
 			if (data == undefined) continue;
 			dataType = typeDetector.detectData(data);
-			break;
+			if (dataType != 'datetime') break;
+
+
 		}
 		const title = sheet.data[dataSpan.dataBeginAtRowIndex][columnIndex];
 		const dataContext = dataType == 'text' ? 'identifier' : 'values';
