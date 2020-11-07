@@ -12,6 +12,7 @@ function convertToUnifiedFormat(filePath) {
             name: workbook.SheetNames[i],
             data: aoa,
         };
+        console.log(sheet);
         unifiedFormat.push(table);
     }
     return unifiedFormat;

@@ -1,14 +1,4 @@
-const expectedColDescription = {
-	name: "colname", //column header name
-	dataType: "", //text, datetime, integer, float
-	headerType: "", //text, datetime
-	dataContext: "identifier", //or values
-	year: null, //if type=datetime
-	month: null, //if type=datetime
-	dateTimeFormat: null, //DD MM YYYY or DD/MM/YYYY (only if year and month are both null - general datetime series)
-}
-
-
+const typeDetector = require("./type_detector");
 
 /***************************
 FUNCTIONS
@@ -67,20 +57,24 @@ function collectColumnDescriptions(sheet, dataSpan) {
 	const columnDescriptions = [];
 
 	for (var columnIndex = dataSpan.dataBeginAtColIndex; columnIndex <= dataSpan.dataEndsAtColIndex; columnIndex++) {
+		let dataType = '';
+		for (var rowIndex = dataSpan.dataBeginAtRowIndex + 1; rowIndex <= dataSpan.dataEndsAtRowIndex; rowIndex++) {
+			const data = sheet.data[rowIndex][columnIndex];
+			if (data == undefined) continue;
+			dataType = typeDetector.detectData(data);
+			break;
+		}
 		const title = sheet.data[dataSpan.dataBeginAtRowIndex][columnIndex];
+		const dataContext = dataType == 'text' ? 'identifier' : 'values';
 		columnDescriptions.push({
-			name: title, //column header name
-			dataType: "", //text, datetime, integer, float
-			headerType: "", //text, datetime
-			dataContext: "identifier", //or values
+			name: title,
+			dataType: dataType,
+			headerType: typeDetector.detectHeader(title),
+			dataContext: dataContext, //or values
 			year: null, //if type=datetime
 			month: null, //if type=datetime
 			dateTimeFormat: null, //DD MM YYYY or DD/MM/YYYY (only if year and month are both null - general datetime series)
 		});
-
-		// for (var rowIndex = dataSpan.dataBeginAtRowIndex; rowIndex < dataEndsAtRowIndex; rowIndex++) {
-
-		// }
 	}
 	return columnDescriptions;
 }
