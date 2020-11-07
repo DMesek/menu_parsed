@@ -8,7 +8,7 @@ const unifiedData = convertToUnifiedFormat(filePath);
 
 for (var i = 0; i < unifiedData.length; i++) {
 	var sheetInfo = parseSheet(unifiedData[i]);
-	// console.log(sheetInfo.attributes.columns.map(c => c.dataContext));
+	console.log(sheetInfo.attributes.columns.map(c => c.dataType));
 }
 
 

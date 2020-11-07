@@ -62,8 +62,8 @@ function collectColumnDescriptions(sheet, dataSpan) {
 			const data = sheet.data[rowIndex][columnIndex];
 			if (data == undefined) continue;
 			dataType = typeDetector.detectData(data);
-			break;
-
+			if (dataType != 'datetime') break;
+			let sth = typeDetector.getDateDetails(data);
 
 		}
 		const title = sheet.data[dataSpan.dataBeginAtRowIndex][columnIndex];
@@ -82,7 +82,13 @@ function collectColumnDescriptions(sheet, dataSpan) {
 }
 
 
-
+function Attributes(sheet) {
+	this.hasData = sheet.data.length > 0;
+	this.columns = [];
+	this.skiprows = [];
+	this.skipcolumns = [];
+	this.dataSpan = {};
+}
 
 
 /***************************
@@ -90,13 +96,7 @@ EXPORT
 ****************************/
 
 module.exports.parseSheet = function (sheet) {
-	const attributes = {
-		hasData: sheet.data.length > 0,
-		columns: [], //array of columns descriptions -> expectedColDescription
-		dataSpan: {},
-		skiprows: [], //rows with data out of context inside start/end area
-		skipcolumns: [],
-	};
+	const attributes = new Attributes(sheet);
 	if (!attributes.hasData) return { attributes, sheet };
 
 	const rowInfo = detectSkipRows(sheet);
