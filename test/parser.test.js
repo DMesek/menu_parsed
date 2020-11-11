@@ -132,7 +132,7 @@ describe('parser test for data/primjer3.xlsx sheet1', () => {
         'Mjesto,Šifra namjene,Opis plaćanja,Datum izvršenja');
     testHeaderType(sheet, Array(18).fill('text').toString());
     // should maybe change - first one integer?
-    testDataType(sheet, 'text,text,text,text,text,text,float,integer,text,text,text,text,text,text,text,text,text,datetime')
+    testDataType(sheet, 'text,text,text,text,text,text,float,float,text,text,text,text,text,text,text,text,text,datetime')
     testDataContext(sheet, Array(6).fill('identifier').concat(Array(2).fill('values').concat(Array(9).fill('identifier'))).toString() + ',values');
     testCommonMonth(sheet, ',,,,,,,,,,,,,,,,,'); //no common year/month detected
     testCommonYear(sheet, ',,,,,,,,,,,,,,,,,2019');
@@ -151,7 +151,7 @@ describe('parser test for data/primjer4.xlsx sheet1', () => {
     testHeaderTitle(sheet, 'Partner,Datum,Sati,Opis,Tip posla,Zaposlenik,EUR po satu,TOTAL EUR,Nenaplatno');
     testHeaderType(sheet, Array(9).fill('text').toString());
     testHasData(sheet, true);
-    testDataType(sheet, 'text,datetime,integer,text,integer,text,integer,integer,integer');
+    testDataType(sheet, 'text,datetime,float,text,integer,text,integer,integer,integer');
     testCommonMonth(sheet, ',01,,,,,,,');
     testCommonYear(sheet, ',2020,,,,,,,');
     testCommonDatePattern(sheet, ',YYYY.MM.DD,,,,,,,');

@@ -74,42 +74,48 @@ function detectDataSpan({ maxColumnIndex, maxRowIndex, skiprows, skipcolumns }) 
 	};
 }
 
+function parseColumn(sheet, columnIndex, startDataRowIndex, dataEndRowIndex) {
+	let tableCell, didDateFormatChange = false;
+	const columnDescription = new ColumnDescription();
+	for (var rowIndex = startDataRowIndex; rowIndex <= dataEndRowIndex; rowIndex++) {
+		tableCell = sheet.data[rowIndex][columnIndex];
+		if (tableCell == undefined) continue;
+		columnDescription.dataType = typeDetector.detectData(tableCell);
+		if (columnDescription.dataType == 'integer') continue;
+		if (columnDescription.dataType != 'datetime') break;
+
+		const dateDetails = typeDetector.getDateDetails(tableCell);
+		if (rowIndex == startDataRowIndex) {
+			columnDescription.year = dateDetails.year;
+			columnDescription.month = dateDetails.month;
+			columnDescription.dateTimeFormat = dateDetails.dateTimeFormat;
+		} else if (columnDescription.year != dateDetails.year) columnDescription.year = null;
+		else if (columnDescription.month != dateDetails.month) columnDescription.month = null;
+		else if (!didDateFormatChange && columnDescription.dateTimeFormat != dateDetails.dateTimeFormat) {
+			columnDescription.dateTimeFormat = dateDetails.dateTimeFormat;
+			didDateFormatChange = true;
+		}
+	}
+	return columnDescription;
+}
+
 function collectColumnDescriptions(sheet, dataSpan) {
 	const columnDescriptions = [];
-
+	let columnDetails;
 	for (var columnIndex = dataSpan.dataBeginAtColIndex; columnIndex <= dataSpan.dataEndsAtColIndex; columnIndex++) {
-		let dataType, year = null, month = null, dateTimeFormat = null;
-		for (var rowIndex = dataSpan.dataBeginAtRowIndex + 1; rowIndex <= dataSpan.dataEndsAtRowIndex; rowIndex++) {
-			const data = sheet.data[rowIndex][columnIndex];
-			if (data == undefined) continue;
-			dataType = typeDetector.detectData(data);
-			if (dataType != 'datetime') break;
+		columnDetails = parseColumn(sheet, columnIndex, dataSpan.dataBeginAtRowIndex + 1, dataSpan.dataEndsAtRowIndex);
 
-			const dateDetails = typeDetector.getDateDetails(data);
-			if (rowIndex == dataSpan.dataBeginAtRowIndex + 1) {
-				year = dateDetails.year; month = dateDetails.month; dateTimeFormat = dateDetails.dateTimeFormat;
-			} else if (year != dateDetails.year) year = null;
-			else if (month != dateDetails.month) month = null;
-			else if (dateTimeFormat != dateDetails.dateTimeFormat) dateTimeFormat = null;
+		columnDetails.title = sheet.data[dataSpan.dataBeginAtRowIndex][columnIndex];
+		columnDetails.dataContext = columnDetails.dataType == 'text' ? 'identifier' : 'values';
 
+		columnDetails.headerType = typeDetector.detectHeader(columnDetails.title);
+		if (columnDetails.headerType == 'datetime') {
+			const dateDetails = typeDetector.getDateDetails(columnDetails.title);
+			columnDetails.year = dateDetails.year;
+			columnDetails.month = dateDetails.month;
+			columnDetails.dateTimeFormat = dateDetails.dateTimeFormat;
 		}
-		const title = sheet.data[dataSpan.dataBeginAtRowIndex][columnIndex];
-		const dataContext = dataType == 'text' ? 'identifier' : 'values';
-
-		const headerType = typeDetector.detectHeader(title);
-		if (headerType == 'datetime') {
-			const dateDetails = typeDetector.getDateDetails(title);
-			year = dateDetails.year; month = dateDetails.month; dateTimeFormat = dateDetails.dateTimeFormat;
-		}
-		columnDescriptions.push({
-			name: title,
-			dataType: dataType,
-			headerType: headerType,
-			dataContext: dataContext,
-			year: year,
-			month: month,
-			dateTimeFormat: dateTimeFormat,
-		});
+		columnDescriptions.push(columnDetails);
 	}
 	return columnDescriptions;
 }
@@ -127,6 +133,16 @@ function Attributes(sheet) {
 	this.dataBeginAtColIndex = -1;
 	this.dataEndsAtRowIndex = -1;
 	this.dataEndsAtColIndex = -1;
+}
+
+function ColumnDescription() {
+	this.name = '';
+	this.dataType = '';
+	this.headerType = '';
+	this.dataContext = '';
+	this.year = null;
+	this.month = null;
+	this.dateTimeFormat = null;
 }
 
 
