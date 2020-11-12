@@ -105,12 +105,12 @@ function collectColumnDescriptions(sheet, dataSpan) {
 	for (var columnIndex = dataSpan.dataBeginAtColIndex; columnIndex <= dataSpan.dataEndsAtColIndex; columnIndex++) {
 		columnDetails = parseColumn(sheet, columnIndex, dataSpan.dataBeginAtRowIndex + 1, dataSpan.dataEndsAtRowIndex);
 
-		columnDetails.title = sheet.data[dataSpan.dataBeginAtRowIndex][columnIndex];
+		columnDetails.name = sheet.data[dataSpan.dataBeginAtRowIndex][columnIndex];
 		columnDetails.dataContext = columnDetails.dataType == 'text' ? 'identifier' : 'values';
 
-		columnDetails.headerType = typeDetector.detectHeader(columnDetails.title);
+		columnDetails.headerType = typeDetector.detectHeader(columnDetails.name);
 		if (columnDetails.headerType == 'datetime') {
-			const dateDetails = typeDetector.getDateDetails(columnDetails.title);
+			const dateDetails = typeDetector.getDateDetails(columnDetails.name);
 			columnDetails.year = dateDetails.year;
 			columnDetails.month = dateDetails.month;
 			columnDetails.dateTimeFormat = dateDetails.dateTimeFormat;

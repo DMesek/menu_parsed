@@ -3,11 +3,11 @@ const typeDetector = require("../src/type_detector");
 
 describe('typeDetector.detectData', () => {
     test("should return 'integer' when an integer is passed", () => {
-        expect(typeDetector.detectData(2)).toBe('integer');
+        expect(typeDetector.detectData('2')).toBe('integer');
     });
 
     test("should return 'float' when a float is passed", () => {
-        expect(typeDetector.detectData(2.2)).toBe('float');
+        expect(typeDetector.detectData('2.2')).toBe('float');
     });
 
     test("should return 'text' when a string is passed", () => {
