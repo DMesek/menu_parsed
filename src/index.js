@@ -8,7 +8,9 @@ const unifiedData = convertToUnifiedFormat(filePath);
 
 for (var i = 0; i < unifiedData.length; i++) {
 	var sheetInfo = parseSheet(unifiedData[i]);
-	// console.log(sheetInfo.attributes.columns.map(c => c.year));
+	console.log('********** Columns **********');
+	for (column of sheetInfo.attributes.columns) console.log(column);
+	console.log(sheetInfo);
 }
 
 

@@ -51,7 +51,9 @@ function getDateDetails(data) {
 
 function checkIfNumber(input) {
     for (let i = 0; i < input.length; i++) {
-        if ((input[i] >= '0' && input[i] <= '9') || input[i] == '.' || input[i] == ',') continue;
+        if (i == 0 && input[i] == '-') continue;
+        if ((input[i] >= '0' && input[i] <= '9')
+            || input[i] == '.' || input[i] == ',') continue;
         else return false;
     }
     return true;

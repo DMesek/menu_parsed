@@ -39,5 +39,23 @@ const MMYYYY = {
     splitIndex: 2,
 }
 
-module.exports.supportedDataDateFormats = [DDMMYYYY, MMDDYYYY, YYYYMMDD];
-module.exports.supportedHeaderDateFormats = [YYYYMM, MMYYYY];
+const YYYY = {
+    regex: /^(\d{4})/,
+    pattern: ['YYYY'],
+    yearIndex: 1,
+}
+
+const daysFirstSupportedFormats = [DDMMYYYY, YYYYMMDD, MMDDYYYY];
+const monthsFirstSupportedFormats = [MMDDYYYY, YYYYMMDD, DDMMYYYY];
+
+let currentSupportedFormats = daysFirstSupportedFormats;
+
+module.exports.supportedDataDateFormats = currentSupportedFormats;
+module.exports.supportedHeaderDateFormats = [YYYYMM, MMYYYY, YYYY];
+
+module.exports.daysFirstFormats = daysFirstSupportedFormats
+module.exports.monthsFirstFormats = monthsFirstSupportedFormats
+
+module.exports.changeFormatPriority = function (format) {
+    currentSupportedFormats = format;
+}

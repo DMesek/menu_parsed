@@ -19,10 +19,10 @@ function testDataSpan({ sheet, expectedRowStart, expectedRowEnd, expectedColumnS
     const result = parser.parseSheet(sheet);
     test(`data span should be rows: ${expectedRowStart} - ${expectedRowEnd}, 
             columns: ${expectedColumnStart} - ${expectedColumnEnd}`, () => {
-        expect(result.attributes.dataSpan.dataBeginAtRowIndex).toBe(expectedRowStart);
-        expect(result.attributes.dataSpan.dataBeginAtColIndex).toBe(expectedColumnStart);
-        expect(result.attributes.dataSpan.dataEndsAtRowIndex).toBe(expectedRowEnd);
-        expect(result.attributes.dataSpan.dataEndsAtColIndex).toBe(expectedColumnEnd);
+        expect(result.attributes.dataBeginAtRowIndex).toBe(expectedRowStart);
+        expect(result.attributes.dataBeginAtColIndex).toBe(expectedColumnStart);
+        expect(result.attributes.dataEndsAtRowIndex).toBe(expectedRowEnd);
+        expect(result.attributes.dataEndsAtColIndex).toBe(expectedColumnEnd);
     });
 }
 
@@ -170,6 +170,42 @@ describe('parser test for data/GLoutput.xlsx sheet1', () => {
         'Naziv mjesta troška,Opis knjiženja,Vezni broj,Valuta,Temeljnica,Duguje,Potražuje,Saldo');
     testHeaderType(sheet, Array(15).fill('text').toString());
     testDataType(sheet, 'integer,datetime,text,text,datetime,datetime,text,text,text,text,text,text,float,float,float');
+    testCommonMonth(sheet, ',9,,,,,,,,,,,,,');
+    testCommonYear(sheet, ',2020,,,2020,2020,,,,,,,,,');
+    testCommonDatePattern(sheet, ',DD/MM/YYYY,,,DD/MM/YYYY,DD/MM/YYYY,,,,,,,,,');
+});
+
+
+describe('parser test for data/nekafirmapozicije.xls sheet2', () => {
+    const sheet = convertToUnifiedFormat('data/nekafirmapozicije.xls')[1];
+
+    testSkipRows(sheet, '0');
+    testSkipColumns(sheet, '');
+    testDataSpan({
+        sheet: sheet, expectedRowStart: 1, expectedRowEnd: 35,
+        expectedColumnStart: 0, expectedColumnEnd: 9,
+    })
+    testHeaderTitle(sheet, 'unknown,2015.,2016.,% prom. 16./15.,2017.,% prom. 17./16.,2018.,% prom. 18./17.,2019.,% prom. 19./18.');
+    testHeaderType(sheet, 'text,datetime,datetime,text,datetime,text,datetime,text,datetime,text');
+    testCommonYear(sheet, ',2015,2016,,2017,,2018,,2019,');
+    testCommonMonth(sheet, ',,,,,,,,,');
+    testCommonDatePattern(sheet, ',YYYY,YYYY,,YYYY,,YYYY,,YYYY,')
+});
+
+describe('parser test for data/primjer2-doradjen-obasheeta.xlsx sheet2', () => {
+    const sheet = convertToUnifiedFormat('data/primjer2-doradjen-obasheeta.xlsx')[1];
+
+    testSkipRows(sheet, '9,10,20,21,25,35');
+    testSkipColumns(sheet, '');
+    testDataSpan({
+        sheet: sheet, expectedRowStart: 0, expectedRowEnd: 34,
+        expectedColumnStart: 0, expectedColumnEnd: 15,
+    })
+    testHeaderTitle(sheet, 'Proizvod,Regija,Kanal,2020-1,2020-2,2020-3,' +
+        '2020-4,2020-5,6,2020-7,2020-8,2020-9,2020-10,2020-11,2020-12,unknown');
+    testHeaderType(sheet, 'text,text,text,datetime,datetime,datetime,datetime,datetime,text,' +
+        'datetime,datetime,datetime,datetime,datetime,datetime,text');
+    testDataType(sheet, Array(3).fill('text').concat(Array(12).fill('float')).toString() + ',text');
 });
 
 describe('parser test for data/primjer3.xlsx sheet2 (empty sheet)', () => {

@@ -23,7 +23,10 @@ module.exports.parseSheet = function (sheet) {
 		skiprows: rowInfo.skiprows,
 		skipcolumns: skipcolumns
 	});
-	attributes.dataSpan = dataSpan;
+	attributes.dataBeginAtRowIndex = dataSpan.dataBeginAtRowIndex;
+	attributes.dataBeginAtColIndex = dataSpan.dataBeginAtColIndex;
+	attributes.dataEndsAtRowIndex = dataSpan.dataEndsAtRowIndex;
+	attributes.dataEndsAtColIndex = dataSpan.dataEndsAtColIndex;
 	attributes.skiprows = rowInfo.skiprows;
 	attributes.skipcolumns = skipcolumns;
 	attributes.columns = collectColumnDescriptions(sheet, dataSpan);
@@ -105,7 +108,8 @@ function collectColumnDescriptions(sheet, dataSpan) {
 	for (var columnIndex = dataSpan.dataBeginAtColIndex; columnIndex <= dataSpan.dataEndsAtColIndex; columnIndex++) {
 		columnDetails = parseColumn(sheet, columnIndex, dataSpan.dataBeginAtRowIndex + 1, dataSpan.dataEndsAtRowIndex);
 
-		columnDetails.name = sheet.data[dataSpan.dataBeginAtRowIndex][columnIndex];
+		let title = sheet.data[dataSpan.dataBeginAtRowIndex][columnIndex];
+		columnDetails.name = title != undefined ? title : 'unknown';
 		columnDetails.dataContext = columnDetails.dataType == 'text' ? 'identifier' : 'values';
 
 		columnDetails.headerType = typeDetector.detectHeader(columnDetails.name);
