@@ -4,7 +4,7 @@ const isInt = input => checkIfNumber(input) && !input.includes('.');
 const isFloat = input => checkIfNumber(input) && input.includes('.');
 
 const isDataDate = function (data) {
-    for (format of dateFormats.supportedDataDateFormats) {
+    for (format of dateFormats.supportedDataDateFormats()) {
         if (data.toString().match(format.regex) != null) return true;
     }
     return false;
@@ -32,13 +32,14 @@ function detectHeader(data) {
 
 function getDateDetails(data) {
     let match = null;
-    const supportedFormats = dateFormats.supportedDataDateFormats.concat(dateFormats.supportedHeaderDateFormats);
+    const supportedFormats = dateFormats.supportedDataDateFormats().concat(dateFormats.supportedHeaderDateFormats);
     for (format of supportedFormats) {
         match = data.toString().match(format.regex);
         if (match == null) continue;
 
         const month = match[format.monthIndex];
         const day = match[format.dayIndex];
+
         if (month > 12 || day > 31) continue;
         return {
             year: match[format.yearIndex],

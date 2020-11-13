@@ -1,4 +1,5 @@
 const typeDetector = require("./type_detector");
+const dateFormats = require("./date_formats");
 
 /***************************
 CONSTANTS
@@ -78,7 +79,7 @@ function detectDataSpan({ maxColumnIndex, maxRowIndex, skiprows, skipcolumns }) 
 }
 
 function parseColumn(sheet, columnIndex, startDataRowIndex, dataEndRowIndex) {
-	let tableCell, didDateFormatChange = false;
+	let tableCell;
 	const columnDescription = new ColumnDescription();
 	for (var rowIndex = startDataRowIndex; rowIndex <= dataEndRowIndex; rowIndex++) {
 		tableCell = sheet.data[rowIndex][columnIndex];
@@ -92,11 +93,12 @@ function parseColumn(sheet, columnIndex, startDataRowIndex, dataEndRowIndex) {
 			columnDescription.year = dateDetails.year;
 			columnDescription.month = dateDetails.month;
 			columnDescription.dateTimeFormat = dateDetails.dateTimeFormat;
-		} else if (columnDescription.year != dateDetails.year) columnDescription.year = null;
-		else if (columnDescription.month != dateDetails.month) columnDescription.month = null;
-		else if (!didDateFormatChange && columnDescription.dateTimeFormat != dateDetails.dateTimeFormat) {
-			columnDescription.dateTimeFormat = dateDetails.dateTimeFormat;
-			didDateFormatChange = true;
+		}
+		if (columnDescription.year != dateDetails.year) columnDescription.year = null;
+		if (columnDescription.month != dateDetails.month) columnDescription.month = null;
+		if (columnDescription.dateTimeFormat != dateDetails.dateTimeFormat) {
+			dateFormats.changeFormatPriority();
+			return parseColumn(sheet, columnIndex, startDataRowIndex, dataEndRowIndex);
 		}
 	}
 	return columnDescription;

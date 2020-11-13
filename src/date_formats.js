@@ -45,17 +45,16 @@ const YYYY = {
     yearIndex: 1,
 }
 
-const daysFirstSupportedFormats = [DDMMYYYY, YYYYMMDD, MMDDYYYY];
-const monthsFirstSupportedFormats = [MMDDYYYY, YYYYMMDD, DDMMYYYY];
+const daysFirstSupportedFormats = [YYYYMMDD, DDMMYYYY, MMDDYYYY];
+const monthsFirstSupportedFormats = [YYYYMMDD, MMDDYYYY, DDMMYYYY];
 
 let currentSupportedFormats = daysFirstSupportedFormats;
 
-module.exports.supportedDataDateFormats = currentSupportedFormats;
+module.exports.supportedDataDateFormats = () => currentSupportedFormats;
 module.exports.supportedHeaderDateFormats = [YYYYMM, MMYYYY, YYYY];
 
-module.exports.daysFirstFormats = daysFirstSupportedFormats
-module.exports.monthsFirstFormats = monthsFirstSupportedFormats
-
-module.exports.changeFormatPriority = function (format) {
-    currentSupportedFormats = format;
+module.exports.changeFormatPriority = function () {
+    if (currentSupportedFormats == daysFirstSupportedFormats)
+        currentSupportedFormats = monthsFirstSupportedFormats;
+    else currentSupportedFormats = daysFirstSupportedFormats;
 }
