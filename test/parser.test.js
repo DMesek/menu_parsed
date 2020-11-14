@@ -88,7 +88,7 @@ describe('parser test for data/primjer.xlsx sheet1', () => {
     testSkipRows(sheet, '0,1,2');
     testSkipColumns(sheet, '15,16');
     testDataSpan({
-        sheet: sheet, expectedRowStart: 3, expectedRowEnd: 33,
+        sheet: sheet, expectedRowStart: 4, expectedRowEnd: 33,
         expectedColumnStart: 0, expectedColumnEnd: 14,
     })
     testHeaderTitle(sheet, 'Proizvod,Regija,Kanal,2020-1,2020-2,2020-3,' +
@@ -107,7 +107,7 @@ describe('parser test for data/primjer2.xlsx sheet2', () => {
     testSkipRows(sheet, '9,10,20,21,35');
     testSkipColumns(sheet, '15');
     testDataSpan({
-        sheet: sheet, expectedRowStart: 0, expectedRowEnd: 34,
+        sheet: sheet, expectedRowStart: 1, expectedRowEnd: 34,
         expectedColumnStart: 0, expectedColumnEnd: 14,
     })
     testHeaderTitle(sheet, 'Proizvod,Regija,Kanal,2020-1,2020-2,2020-3,' +
@@ -124,7 +124,7 @@ describe('parser test for data/primjer3.xlsx sheet1', () => {
     testSkipRows(sheet, '');
     testSkipColumns(sheet, '');
     testDataSpan({
-        sheet: sheet, expectedRowStart: 0, expectedRowEnd: 748,
+        sheet: sheet, expectedRowStart: 1, expectedRowEnd: 748,
         expectedColumnStart: 0, expectedColumnEnd: 17,
     })
     testHeaderTitle(sheet, 'Broj naloga,Naziv,Adresa, ulica i broj,Mjesto,Broj računa,Poziv na broj,' +
@@ -133,7 +133,7 @@ describe('parser test for data/primjer3.xlsx sheet1', () => {
     testHeaderType(sheet, Array(18).fill('text').toString());
     // should maybe change - first one integer?
     testDataType(sheet, 'integer,text,text,text,text,text,float,float,text,text,text,text,text,text,text,text,text,datetime')
-    testDataContext(sheet, 'values,' + Array(5).fill('identifier').concat(Array(2).fill('values').concat(Array(9).fill('identifier'))).toString() + ',values');
+    testDataContext(sheet, Array(6).fill('identifier').concat(Array(2).fill('values').concat(Array(9).fill('identifier'))).toString() + ',values');
     testCommonMonth(sheet, ',,,,,,,,,,,,,,,,,'); //no common year/month detected
     testCommonYear(sheet, ',,,,,,,,,,,,,,,,,2019');
     testCommonDatePattern(sheet, ',,,,,,,,,,,,,,,,,DD.MM.YYYY');
@@ -145,7 +145,7 @@ describe('parser test for data/primjer4.xlsx sheet1', () => {
     testSkipRows(sheet, '31');
     testSkipColumns(sheet, '');
     testDataSpan({
-        sheet: sheet, expectedRowStart: 0, expectedRowEnd: 30,
+        sheet: sheet, expectedRowStart: 1, expectedRowEnd: 30,
         expectedColumnStart: 0, expectedColumnEnd: 8,
     })
     testHeaderTitle(sheet, 'Partner,Datum,Sati,Opis,Tip posla,Zaposlenik,EUR po satu,TOTAL EUR,Nenaplatno');
@@ -163,7 +163,7 @@ describe('parser test for data/GLoutput.xlsx sheet1', () => {
     testSkipRows(sheet, '');
     testSkipColumns(sheet, '');
     testDataSpan({
-        sheet: sheet, expectedRowStart: 0, expectedRowEnd: 48,
+        sheet: sheet, expectedRowStart: 1, expectedRowEnd: 48,
         expectedColumnStart: 0, expectedColumnEnd: 14,
     })
     testHeaderTitle(sheet, 'Konto,Datum,Partner,Naziv partnera,Datum računa (org.),Dospijeće,Mjesto troška,' +
@@ -182,11 +182,12 @@ describe('parser test for data/nekafirmapozicije.xls sheet2', () => {
     testSkipRows(sheet, '0');
     testSkipColumns(sheet, '');
     testDataSpan({
-        sheet: sheet, expectedRowStart: 1, expectedRowEnd: 35,
+        sheet: sheet, expectedRowStart: 2, expectedRowEnd: 35,
         expectedColumnStart: 0, expectedColumnEnd: 9,
     })
     testHeaderTitle(sheet, 'unknown,2015.,2016.,% prom. 16./15.,2017.,% prom. 17./16.,2018.,% prom. 18./17.,2019.,% prom. 19./18.');
     testHeaderType(sheet, 'text,datetime,datetime,text,datetime,text,datetime,text,datetime,text');
+    testDataContext(sheet, 'identifier,values,values,identifier,values,identifier,values,identifier,values,identifier');
     testCommonYear(sheet, ',2015,2016,,2017,,2018,,2019,');
     testCommonMonth(sheet, ',,,,,,,,,');
     testCommonDatePattern(sheet, ',YYYY,YYYY,,YYYY,,YYYY,,YYYY,')
@@ -198,7 +199,7 @@ describe('parser test for data/primjer2-doradjen-obasheeta.xlsx sheet2', () => {
     testSkipRows(sheet, '9,10,20,21,25,35');
     testSkipColumns(sheet, '');
     testDataSpan({
-        sheet: sheet, expectedRowStart: 0, expectedRowEnd: 34,
+        sheet: sheet, expectedRowStart: 1, expectedRowEnd: 34,
         expectedColumnStart: 0, expectedColumnEnd: 15,
     })
     testHeaderTitle(sheet, 'Proizvod,Regija,Kanal,2020-1,2020-2,2020-3,' +

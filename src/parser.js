@@ -7,6 +7,7 @@ CONSTANTS
 
 const skipRowFactor = 0.25;
 const skipColumnFactor = 0.04;
+const firstColumnIdentifier = true;
 
 /***************************
 EXPORT
@@ -24,7 +25,7 @@ module.exports.parseSheet = function (sheet) {
 		skiprows: rowInfo.skiprows,
 		skipcolumns: skipcolumns
 	});
-	attributes.dataBeginAtRowIndex = dataSpan.dataBeginAtRowIndex;
+	attributes.dataBeginAtRowIndex = dataSpan.dataBeginAtRowIndex + 1;
 	attributes.dataBeginAtColIndex = dataSpan.dataBeginAtColIndex;
 	attributes.dataEndsAtRowIndex = dataSpan.dataEndsAtRowIndex;
 	attributes.dataEndsAtColIndex = dataSpan.dataEndsAtColIndex;
@@ -113,6 +114,10 @@ function collectColumnDescriptions(sheet, dataSpan) {
 		let title = sheet.data[dataSpan.dataBeginAtRowIndex][columnIndex];
 		columnDetails.name = title != undefined ? title : 'unknown';
 		columnDetails.dataContext = columnDetails.dataType == 'text' ? 'identifier' : 'values';
+		if (firstColumnIdentifier && columnIndex == dataSpan.dataBeginAtColIndex) {
+			columnDetails.dataContext = 'identifier';
+		}
+
 
 		columnDetails.headerType = typeDetector.detectHeader(columnDetails.name);
 		if (columnDetails.headerType == 'datetime') {
