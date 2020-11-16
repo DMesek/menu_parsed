@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "get-user-locale": "^1.4.0",
     "xlsx": "^0.16.8"
   }
 }

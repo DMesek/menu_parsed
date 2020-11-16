@@ -13,6 +13,7 @@ function convertToUnifiedFormat(filePath) {
             data: aoa,
         };
         unifiedFormat.push(table);
+        console.log(aoa);
     }
     return unifiedFormat;
 }
