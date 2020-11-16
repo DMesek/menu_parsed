@@ -1,7 +1,13 @@
 const dateFormats = require("./date_formats");
+const locale =  require('get-user-locale');
 
-const isInt = input => checkIfNumber(input) && !input.includes('.');
-const isFloat = input => checkIfNumber(input) && input.includes('.');
+let decimalPoint = '.';
+const currentLocale = locale.getUserLocale().toLocaleLowerCase();
+if (['it-it', 'es-es', 'de-de', 'fr-fr', 'en-ca'].includes(currentLocale)) 
+    decimalPoint = ',';
+
+const isInt = input => checkIfNumber(input) && !input.includes(decimalPoint);
+const isFloat = input => checkIfNumber(input) && input.includes(decimalPoint);
 
 const isDataDate = function (data) {
     for (format of dateFormats.supportedDataDateFormats()) {
@@ -54,7 +60,8 @@ function checkIfNumber(input) {
     for (let i = 0; i < input.length; i++) {
         if (i == 0 && input[i] == '-') continue;
         if ((input[i] >= '0' && input[i] <= '9')
-            || input[i] == '.' || input[i] == ',') continue;
+            || input[i] == '.' || input[i] == ','
+            || input[i] == ' ') continue;
         else return false;
     }
     return true;
