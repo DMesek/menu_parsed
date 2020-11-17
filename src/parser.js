@@ -20,7 +20,6 @@ module.exports.parseSheet = function (sheet) {
 
 	const rowInfo = getRowInfo(sheet);
 	const maxRowIndex = detectLastRow(rowInfo.skiprows, sheet);
-	console.log(`The max row index is: ${maxRowIndex}`);
 	const skipcolumns = detectSkipColumns(sheet, rowInfo.maxRowLength, maxRowIndex);
 	const dataSpan = detectDataSpan({
 		maxColumnIndex: rowInfo.maxRowLength,
@@ -32,7 +31,7 @@ module.exports.parseSheet = function (sheet) {
 	attributes.dataBeginAtColIndex = dataSpan.dataBeginAtColIndex;
 	attributes.dataEndsAtRowIndex = dataSpan.dataEndsAtRowIndex;
 	attributes.dataEndsAtColIndex = dataSpan.dataEndsAtColIndex;
-	attributes.skiprows = rowInfo.skiprows;
+	attributes.skiprows = fixSkipRows(rowInfo.skiprows, maxRowIndex);;
 	attributes.skipcolumns = skipcolumns;
 	attributes.columns = collectColumnDescriptions(sheet, dataSpan);
 	return { attributes, sheet };
@@ -47,12 +46,9 @@ function detectLastRow(skiprows, sheet) {
 	let previousSkipRow, currentSkipRow, initialSkipRow;
 	for (var i = 0; i < skiprows.length; ) {
 		initialSkipRow = skiprows[i];
-		console.log(`initialSkipRow ${initialSkipRow}`);
 		previousSkipRow = skiprows[i++];
-		console.log(`previousSkipRow ${previousSkipRow}`);
 		for (j = 0; j < emptyRowTolerance; j++) {
 			currentSkipRow = skiprows[i++];
-			console.log(`currentSkipRow ${currentSkipRow}`);
 			if (currentSkipRow == (previousSkipRow + 1)) {
 				previousSkipRow = currentSkipRow;
 			} else break;
@@ -60,6 +56,15 @@ function detectLastRow(skiprows, sheet) {
 		}
 	}
 	return lastRow;
+}
+
+function fixSkipRows(skiprows, maxRowIndex) {
+	const skiprowIndex = skiprows.indexOf(maxRowIndex);
+	if (skiprowIndex != -1) {
+		skiprows = skiprows.slice(0,skiprowIndex);
+	}
+	
+	return skiprows
 }
 
 function getRowInfo(sheet) {
