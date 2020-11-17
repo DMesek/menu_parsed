@@ -8,6 +8,7 @@ CONSTANTS
 const skipRowFactor = 0.25;
 const skipColumnFactor = 0.04;
 const firstColumnIdentifier = true;
+const emptyRowTolerance = 10;
 
 /***************************
 EXPORT
@@ -18,10 +19,12 @@ module.exports.parseSheet = function (sheet) {
 	if (!attributes.hasData) return { attributes, sheet };
 
 	const rowInfo = getRowInfo(sheet);
-	const skipcolumns = detectSkipColumns(sheet, rowInfo.maxRowLength);
+	const maxRowIndex = detectLastRow(rowInfo.skiprows, sheet);
+	console.log(`The max row index is: ${maxRowIndex}`);
+	const skipcolumns = detectSkipColumns(sheet, rowInfo.maxRowLength, maxRowIndex);
 	const dataSpan = detectDataSpan({
 		maxColumnIndex: rowInfo.maxRowLength,
-		maxRowIndex: sheet.data.length,
+		maxRowIndex: maxRowIndex,
 		skiprows: rowInfo.skiprows,
 		skipcolumns: skipcolumns
 	});
@@ -39,9 +42,29 @@ module.exports.parseSheet = function (sheet) {
 FUNCTIONS
 ****************************/
 
+function detectLastRow(skiprows, sheet) {
+	let lastRow = sheet.data.length;
+	let previousSkipRow, currentSkipRow, initialSkipRow;
+	for (var i = 0; i < skiprows.length; ) {
+		initialSkipRow = skiprows[i];
+		console.log(`initialSkipRow ${initialSkipRow}`);
+		previousSkipRow = skiprows[i++];
+		console.log(`previousSkipRow ${previousSkipRow}`);
+		for (j = 0; j < emptyRowTolerance; j++) {
+			currentSkipRow = skiprows[i++];
+			console.log(`currentSkipRow ${currentSkipRow}`);
+			if (currentSkipRow == (previousSkipRow + 1)) {
+				previousSkipRow = currentSkipRow;
+			} else break;
+			if (j == emptyRowTolerance - 1) return initialSkipRow - 1;
+		}
+	}
+	return lastRow;
+}
+
 function getRowInfo(sheet) {
 	const skiprows = [];
-	let maxRowLength = 0;
+	let maxRowLength = getInitialMaxRowLength(sheet);
 	for (var rowIndex = 0; rowIndex < sheet.data.length; rowIndex++) {
 		const row = sheet.data[rowIndex];
 		if (row.length > maxRowLength) maxRowLength = row.length;
@@ -53,14 +76,14 @@ function getRowInfo(sheet) {
 	}
 }
 
-function detectSkipColumns(sheet, maxRowLength) {
+function detectSkipColumns(sheet, maxRowLength, maxRowIndex) {
 	let skipcolumns = [];
 	for (var columnIndex = 0; columnIndex < maxRowLength; columnIndex++) {
 		let definedCount = 0;
 		for (var rowIndex = 0; rowIndex < sheet.data.length; rowIndex++) {
 			if (sheet.data[rowIndex][columnIndex] != undefined) definedCount++;
 		}
-		if (definedCount < sheet.data.length * skipColumnFactor) skipcolumns.push(columnIndex);
+		if (definedCount < maxRowIndex * skipColumnFactor) skipcolumns.push(columnIndex);
 	}
 	return skipcolumns;
 }
@@ -129,6 +152,12 @@ function collectColumnDescriptions(sheet, dataSpan) {
 		columnDescriptions.push(columnDetails);
 	}
 	return columnDescriptions;
+}
+
+function getInitialMaxRowLength(sheet) {
+	for (var rowIndex = 0; rowIndex < sheet.data.length; rowIndex++) {
+		if (sheet.data[rowIndex].length > 1) return sheet.data[rowIndex].length;
+	}
 }
 
 const getDefinedCount = row => row.filter(value => value != undefined).length;
