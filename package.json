@@ -9,7 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "firebase": "^8.2.3",
     "get-user-locale": "^1.4.0",
-    "xlsx": "^0.16.8"
+    "xlsx": "^0.16.8",
+    "xmlhttprequest": "^1.8.0"
   }
 }
